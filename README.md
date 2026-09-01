@@ -7,10 +7,11 @@
 [![Reproducibility check](https://github.com/CamiloBedoyaC/modelo-hidrologico-sopchoppy/actions/workflows/reproducibility.yml/badge.svg)](https://github.com/CamiloBedoyaC/modelo-hidrologico-sopchoppy/actions/workflows/reproducibility.yml)
 [![Reporte interactivo](https://img.shields.io/badge/GitHub%20Pages-explorar%20reporte-3ee0a0)](https://camilobedoyac.github.io/modelo-hidrologico-sopchoppy/)
 
-**Autores:** [Linda Catalina Correa Lozano](https://github.com/LindaCatalina)
-([`@LindaCatalina`](https://github.com/LindaCatalina)) y
-[Juan Camilo Bedoya Carmona](https://github.com/CamiloBedoyaC)
-([`@CamiloBedoyaC`](https://github.com/CamiloBedoyaC))  
+**Autores:** [Juan Camilo Bedoya Carmona](https://github.com/CamiloBedoyaC)
+([`@CamiloBedoyaC`](https://github.com/CamiloBedoyaC))  y 
+[Linda Catalina Correa Lozano](https://github.com/LindaCatalina)
+([`@LindaCatalina`](https://github.com/LindaCatalina))
+
 **Cuenca:** USGS 02327100 · SOPCHOPPY RIVER NR SOPCHOPPY, FLA.
 
 ![Vista previa del proyecto: modelo hidrológico de dos tanques](figuras/github-social-preview.jpg)
