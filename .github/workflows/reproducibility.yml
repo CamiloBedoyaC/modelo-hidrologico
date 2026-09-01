@@ -1,0 +1,37 @@
+name: Reproducibility check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install pinned dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+
+      - name: Compile Python sources
+        run: python -m compileall -q codigo
+
+      - name: Run model unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Regenerate the optional standalone report
+        run: python -X utf8 codigo/generar_reporte_standalone.py
+
+      - name: Verify processed data, metrics and reports
+        run: python -X utf8 codigo/verificar_reproducibilidad.py

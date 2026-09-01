@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "Si usa este proyecto, cite el repositorio y las fuentes CAMELS-US indicadas en DATA_SOURCES.md."
+title: "Modelo hidrológico de dos tanques en la cuenca Sopchoppy River"
+type: software
+authors:
+  - family-names: "Correa Lozano"
+    given-names: "Linda Catalina"
+  - family-names: "Bedoya Carmona"
+    given-names: "Juan Camilo"
+version: 1.0.0
+date-released: 2026-08-30
+license: MIT
+repository-code: "https://github.com/CamiloBedoyaC/modelo-hidrologico-sopchoppy"
+keywords:
+  - hydrology
+  - rainfall-runoff
+  - CAMELS-US
+  - differential-evolution
+  - dual-annealing
+  - Nash-Sutcliffe efficiency

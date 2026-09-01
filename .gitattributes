@@ -1,0 +1,21 @@
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.tex text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.xlsx binary
+*.zip binary
+*.tar.gz binary
+
+# Evita que los HTML generados dominen las estadisticas de lenguajes de GitHub.
+figuras/html/** linguist-generated=true
+informe/reporte_tarea1_interactivo_standalone.html linguist-generated=true

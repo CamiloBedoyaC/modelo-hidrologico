@@ -1,0 +1,40 @@
+# Entornos y secretos
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Datos CAMELS crudos o extraidos (se regeneran con descargar/preprocesar)
+/datos/raw/
+/datos/shapes/
+/datos/02327100/*_forcing_leap.txt
+/datos/02327100/*_streamflow_qc.txt
+/camels_attributes_v2.0.xlsx
+
+# Entregas y descargas pesadas
+*.zip
+*.tar.gz
+/informe/reporte_tarea1_interactivo_standalone.html
+
+# Temporales de LaTeX/PDF
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*_tmp.*
+/tmp/
+
+# Sistema/IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

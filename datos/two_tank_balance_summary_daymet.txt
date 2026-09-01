@@ -1,0 +1,11 @@
+source=daymet
+period_start=1980-01-01
+period_end=2014-12-31
+n_days=12784
+area_km2=271.120000
+nse_m3s=0.066411
+kge_m3s=0.003116
+residual_cumulative_mm=-9.765452335664e-13
+max_abs_daily_residual_mm=3.108624468950e-14
+mean_abs_daily_residual_mm=3.044364253980e-15
+relative_error_final=-1.824727459384e-17

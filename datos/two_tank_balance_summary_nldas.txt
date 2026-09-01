@@ -1,0 +1,11 @@
+source=nldas
+period_start=1980-01-01
+period_end=2014-12-31
+n_days=12784
+area_km2=271.120000
+nse_m3s=0.032444
+kge_m3s=0.057944
+residual_cumulative_mm=-5.758796217670e-13
+max_abs_daily_residual_mm=4.263256414561e-14
+mean_abs_daily_residual_mm=2.787380928733e-15
+relative_error_final=-1.108341729623e-17

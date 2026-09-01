@@ -1,0 +1,721 @@
+<!doctype html>
+        <html lang="es">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>Reporte interactivo - Modelo hidrológico Sopchoppy</title>
+          <style>
+            :root {
+              --bg: #000000;
+              --panel: #0e0e0f;
+              --panel2: #151518;
+              --text: #f5f7fa;
+              --muted: #b5bcc9;
+              --accent: #44b3ff;
+              --accent2: #38d39f;
+              --border: #2d3340;
+            }
+            * { box-sizing: border-box; }
+            body { margin: 0; font-family: "Segoe UI", Tahoma, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+            .container { max-width: 1400px; margin: 0 auto; padding: 28px 28px 80px; }
+            h1, h2, h3, h4 { margin: 0 0 12px; line-height: 1.25; }
+            h1 { font-size: 2.75rem; color: var(--accent); }
+            h2 { margin-top: 34px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--accent2); }
+            h3 { margin-top: 24px; color: #9fd6ff; }
+            p, li { color: var(--text); font-size: 1.03rem; }
+            .authors { font-size: 1.5rem; margin: 6px 0 14px; }
+            .authors strong { font-size: 1.55rem; }
+            .muted { color: var(--muted); }
+            .card { background: linear-gradient(180deg, var(--panel), var(--panel2)); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin: 14px 0; }
+            .figure-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr)); gap: 16px; margin-top: 14px; }
+            .figure-card { background: #08090b; border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
+            .figure-wide { grid-column: 1 / -1; }
+            .figure-card h4 { font-size: 1rem; color: #cfe9ff; margin-bottom: 8px; }
+            iframe { width: 100%; border: 1px solid #2a3140; border-radius: 8px; background: #000; }
+            .styled-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.95rem; overflow: hidden; }
+            .styled-table th, .styled-table td { border: 1px solid #2a3140; padding: 8px 10px; text-align: center; white-space: nowrap; }
+            .styled-table th { background: #1b2230; color: #d2e7ff; }
+            .styled-table tr:nth-child(even) td { background: #10131b; }
+            .styled-table tr:nth-child(odd) td { background: #0b0f16; }
+            .toc a { color: #8dc7ff; text-decoration: none; margin-right: 12px; }
+            .toc a:hover { text-decoration: underline; }
+            .pill { display: inline-block; padding: 4px 9px; border-radius: 999px; background: #1f2f4c; color: #cde7ff; border: 1px solid #37588a; margin-right: 8px; margin-bottom: 8px; font-size: 0.9rem; }
+            img.static-figure { width: 100%; border-radius: 8px; border: 1px solid #2a3140; margin-top: 8px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>Modelo hidrológico lluvia-escorrentía en la cuenca Sopchoppy River, FL</h1>
+            <p class="authors"><strong>Autores:</strong> Linda Catalina Correa Lozano y Juan Camilo Bedoya Carmona</p>
+            <div class="card toc">
+              <a href="#objetivo">Objetivo</a><a href="#datos">Datos</a><a href="#parte1">Parte 1</a><a href="#parte2">Parte 2</a><a href="#parte3">Parte 3</a><a href="#parte4">Parte 4</a><a href="#analisis">Análisis</a><a href="#conclusion">Conclusión</a>
+            </div>
+
+            <h2 id="objetivo">Objetivo</h2>
+            <div class="card"><p>Evaluar el desempeño de un modelo hidrológico conceptual de dos tanques en la cuenca 02327100 (Sopchoppy River, FL), mediante su calibración y validación utilizando diferentes fuentes meteorológicas, métodos de optimización global (Differential Evolution y Dual Annealing) y funciones objetivo orientadas tanto al ajuste global (NSE) como a la representación de eventos extremos, con el fin de analizar su capacidad predictiva, robustez y coherencia física.</p></div>
+
+            <h2 id="datos">Datos</h2>
+            <div class="card">
+              <p>La cuenca analizada corresponde a la estación USGS 02327100 (Sopchoppy River, Florida), perteneciente al conjunto de datos CAMELS.</p>
+              <p>
+                <span class="pill">Cuenca: 02327100</span>
+                <span class="pill">Nombre: SOPCHOPPY RIVER NR SOPCHOPPY, FLA.</span>
+                <span class="pill">Área: 271.12 km2</span>
+                <span class="pill">Fracción nieve: 0.010%</span>
+                <span class="pill">Aridity: 0.784</span>
+                <span class="pill">Runoff ratio: 0.372</span>
+                <span class="pill">Frac forest: 1.000</span>
+                <span class="pill">p_mean: 4.168 mm/d</span>
+                <span class="pill">Elevación media: 25.14 m</span>
+                <span class="pill">gvf_max: 0.858</span>
+              </p>
+              <p>Estas características indican que se trata de una cuenca húmeda del sureste de Estados Unidos, con baja influencia nival y totalmente forestada.</p>
+            </div>
+            <div class="figure-grid"><div class="figure-card">
+  <h4>Mapa de la cuenca y coordenadas</h4>
+  <iframe src="../figuras/html/02327100_mapa_leaflet.html" loading="lazy" style="height:670px;"></iframe>
+</div></div>
+
+            <h2 id="metodologia">Metodología</h2>
+            <h3 id="parte1">Parte 1 - Exploración de CAMELS</h3>
+            <div class="card">
+              <h4>Exploración global de relaciones hidrológicas</h4>
+              <p>Con el fin de contextualizar la cuenca de estudio dentro del conjunto CAMELS, se analizó la relación entre área de drenaje y caudal medio anual mediante regresión log-log, así como su variabilidad en función de atributos climáticos y fisiográficos relevantes. Este análisis permite identificar patrones hidrológicos regionales y evaluar la consistencia física de los datos utilizados.</p>
+            </div>
+            <div class="figure-grid">
+              <div class="figure-card">
+                <h4>Aridez</h4>
+                <iframe src="../figuras/html/camels_area_vs_q_aridity.html" loading="lazy" style="height:600px;"></iframe>
+              </div>
+              <div class="figure-card">
+                <h4>Fracción forestal</h4>
+                <iframe src="../figuras/html/camels_area_vs_q_frac_forest.html" loading="lazy" style="height:600px;"></iframe>
+              </div>
+              <div class="figure-card">
+                <h4>Escorrentía</h4>
+                <iframe src="../figuras/html/camels_area_vs_q_runoff_ratio.html" loading="lazy" style="height:600px;"></iframe>
+              </div>
+              <div class="figure-card">
+                <h4>Pendiente de la curva de duración de caudales</h4>
+                <iframe src="../figuras/html/camels_area_vs_q_slope_fdc.html" loading="lazy" style="height:600px;"></iframe>
+              </div>
+            </div>
+            <div class="card">
+              <p>La base de datos CAMELS contiene 671 cuencas. Sin embargo, el ajuste de la relación log-log entre área y caudal medio se realizó sobre 670 cuencas válidas. La estación 03281100 fue excluida debido a la presencia de valor faltante en la variable q_mean, lo que generó un valor NaN en la variable derivada q_mean_cms. De esta manera, la regresión se estimó únicamente con registros completos y consistentes.</p>
+            </div>
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+                <h4>Heatmap de correlación</h4>
+                <iframe src="../figuras/html/camels_correlacion_heatmap.html" loading="lazy" style="height:600px;"></iframe>
+              </div>
+            </div>
+            <div class="card">
+              <h4>Análisis de colinealidad entre atributos</h4>
+              <p>La matriz de correlación evidencia la presencia de colinealidad significativa entre varios atributos hidrológicos y climáticos. En particular:</p>
+              <ul>
+                <li>runoff_ratio y q_mean presentan alta correlación positiva, coherente con el control directo de la escorrentía sobre el caudal medio.</li>
+                <li>p_mean y aridity muestran correlación inversa marcada, consistente con la definición del índice de aridez.</li>
+                <li>frac_forest presenta correlaciones relevantes con variables climáticas, indicando influencia del régimen hidroclimático regional.</li>
+              </ul>
+              <p>Estas dependencias implican que los atributos no pueden interpretarse como factores independientes. Por lo tanto, las relaciones observadas deben analizarse considerando posibles efectos de control climático subyacente y evitando interpretaciones causales simplificadas.</p>
+            </div>
+
+            <h3 id="parte2">Parte 2 - Exploración de datos</h3>
+            <div class="card">
+              <p>Con el fin de comprender el comportamiento hidrológico previo a la modelación, se realizó un análisis exploratorio de las series diarias y mensuales de precipitación y caudal. Esta evaluación permite identificar el regimen climático dominante, la respuesta hidrológica de la cuenca y la consistencia entre diferentes fuentes meteorológicas utilizadas posteriormente en la calibración.</p>
+            </div>
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+                <h4>Serie diaria P-Q (Daymet)</h4>
+                <iframe src="../figuras/html/series_tiempo_P_Q.html" loading="lazy" style="height:600px;"></iframe>
+              </div>
+            </div>
+            <div class="card">
+              <p>La serie diaria de precipitación y caudal muestra un régimen predominantemente pluvial, sin evidencia de estacionalidad asociada a nieve. Se observan eventos de precipitación frecuentes a lo largo del año, con episodios de alta intensidad superiores a 100 mm/día.</p>
+              <p>El caudal presenta una respuesta rápida ante eventos intensos de lluvia, indicando una componente relevante de escorrentía directa. Sin embargo, la presencia de un caudal base persistente sugiere una contribución subterranea significativa, consistente con las características hidroclimáticas de la región.</p>
+              <p>Se identifican eventos extremos aislados con picos superiores a 300 m³/s, sin evidencia de regulación artificial o discontinuidades estructurales en la serie.</p>
+            </div>
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+                <h4>Ciclo anual mensual</h4>
+                <iframe src="../figuras/html/ciclo_anual_P_Q.html" loading="lazy" style="height:600px;"></iframe>
+              </div>
+            </div>
+            <div class="card">
+              <p>El ciclo anual mensual revela un patrón estacional bien definido. La precipitación presenta máximos durante el verano (julio-septiembre) y valores relativamente menores durante la primavera.</p>
+              <p>No obstante, el caudal medio mensual no coincide exactamente con los máximos de precipitación. Se observa un máximo principal en febrero-marzo y un segundo máximo en agosto, mientras que el mínimo ocurre en mayo.</p>
+              <p>Este desfase entre precipitación y caudal sugiere la presencia de almacenamiento intermedio y control evaporativo, particularmente durante los meses de verano, cuando la evapotranspiración potencial es elevada. La amplitud del rango intercuartílico (p25-p75) indica además alta variabilidad interanual.</p>
+              <p>Este comportamiento justifica la utilización de un modelo conceptual con almacenamiento múltiple, como el modelo de dos tanques implementado en este estudio. La cuenca no responde instantáneamente al régimen de precipitación mensual; existe modulación climática y almacenamiento interno.</p>
+            </div>
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+                <h4>Comparación precipitación (Daymet/NLDAS/Maurer)</h4>
+                <iframe src="../figuras/html/comparacion_precip.html" loading="lazy" style="height:600px;"></iframe>
+              </div>
+            </div>
+            <div class="card">
+              <p>La comparación visual entre Daymet y NLDAS a escala diaria muestra patrones temporales altamente consistentes, con coincidencia en la ocurrencia de eventos y estacionalidad general. Las diferencias se observan principalmente en la magnitud puntual de algunos eventos extremos.</p>
+              <p>A escala mensual, Daymet, NLDAS y Maurer presentan alta consistencia en la representación de la variabilidad interanual y estacional. Sin embargo, Maurer presenta un periodo temporal más corto (hasta 2008). Para mantener consistencia temporal en los periodos de calibración (1990-1999) y validación (2000-2009), se decidió utilizar exclusivamente Daymet y NLDAS en la implementación del modelo hidrológico.</p>
+            </div>
+            <div class="card"><h4>Estadísticas básicas</h4><table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Variable</th>
+      <th>Unidades</th>
+      <th>N</th>
+      <th>Missing</th>
+      <th>Media</th>
+      <th>DesvStd</th>
+      <th>Max</th>
+      <th>P25</th>
+      <th>P75</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>prcp_daymet_mm_day</td>
+      <td>mm/d</td>
+      <td>12784.000</td>
+      <td>0.000</td>
+      <td>4.186</td>
+      <td>10.156</td>
+      <td>141.590</td>
+      <td>0.000</td>
+      <td>2.888</td>
+    </tr>
+    <tr>
+      <td>prcp_nldas_mm_day</td>
+      <td>mm/d</td>
+      <td>12784.000</td>
+      <td>0.000</td>
+      <td>4.064</td>
+      <td>9.883</td>
+      <td>160.860</td>
+      <td>0.000</td>
+      <td>3.500</td>
+    </tr>
+    <tr>
+      <td>prcp_maurer_mm_day</td>
+      <td>mm/d</td>
+      <td>10593.000</td>
+      <td>2191.000</td>
+      <td>3.975</td>
+      <td>8.568</td>
+      <td>128.260</td>
+      <td>0.000</td>
+      <td>4.150</td>
+    </tr>
+    <tr>
+      <td>q_m3s</td>
+      <td>m3/s</td>
+      <td>12697.000</td>
+      <td>87.000</td>
+      <td>5.045</td>
+      <td>10.861</td>
+      <td>331.307</td>
+      <td>0.193</td>
+      <td>5.437</td>
+    </tr>
+  </tbody>
+</table><p class="muted">Las estadísticas confirman que Maurer presenta datos faltantes y menor cobertura temporal. La distribución altamente asimétrica del caudal (media &lt; maximo) refleja la naturaleza episódica de los eventos extremos.</p></div>
+
+            <h3 id="parte3">Parte 3 - Implementación del modelo</h3>
+            <div class="card">
+              <p>Se implementó un modelo hidrológico conceptual de dos tanques en serie, conforme al enunciado del ejercicio. El modelo incluye dos estados de almacenamiento (S1, S2), desbordes controlados por umbrales (D1, D2) y descargas lentas reguladas por coeficientes (k1, k2). La precipitación efectiva alimenta el primer tanque, y el caudal total resulta de la combinación de descargas rápidas y lentas.</p>
+              <p>Previo al proceso de calibración, evaluamos el desempeño del modelo utilizando parámetros por defecto, con el fin de verificar estabilidad estructural y consistencia física.</p>
+            </div>
+            <div class="figure-grid">
+              <div class="figure-card">
+  <h4>No calibrado - Daymet</h4>
+  <iframe src="../figuras/html/two_tank_uncalibrated_hydrograph_daymet.html" loading="lazy" style="height:600px;"></iframe>
+</div>
+              <div class="figure-card">
+  <h4>No calibrado - NLDAS</h4>
+  <iframe src="../figuras/html/two_tank_uncalibrated_hydrograph_nldas.html" loading="lazy" style="height:600px;"></iframe>
+</div>
+            </div>
+            <div class="card">
+              <h4>Desempeño del modelo no calibrado</h4>
+              <p>Con Daymet como forzamiento, el modelo presenta un desempeño bajo (NSE = 0.066). Aunque reproduce la ocurrencia general de eventos asociados a episodios de precipitación, se observa subestimación sistemática de picos y una respuesta suavizada ante eventos extremos.</p>
+              <p>Con NLDAS, el desempeño es aún menor (NSE = 0.032), evidenciando mayor amortiguamiento en la respuesta hidrológica. Estas diferencias preliminares sugieren sensibilidad del modelo a la fuente de precipitación, lo que podría influir en los parámetros óptimos durante la calibración.</p>
+              <p>No obstante, el comportamiento temporal es estable y físicamente consistente, validando la correcta implementación estructural del modelo previo a la optimización de parámetros.</p>
+            </div>
+            <div class="card">
+              <h4>Consistencia de unidades en la implementación</h4>
+              <p>El balance hídrico interno del modelo lo resolvimos completamente en unidades de lámina de agua (mm/día). La precipitación, evapotranspiración, caudal simulado y variaciones de almacenamiento fueron expresadas en mm/día, garantizando coherencia dimensional y conservación de masa.</p>
+              <p>Para efectos de evaluación del desempeño, el caudal simulado fue convertido a m3/s mediante un factor de conversión estimado a partir de la relación entre caudal observado en m³/s y su equivalente en mm/día. Este procedimiento asegura consistencia entre el sistema interno de balance y las métricas estándar utilizadas en hidrología (NSE, KGE).</p>
+            </div>
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+  <h4>Dashboard balance hídrico</h4>
+  <iframe src="../figuras/html/balance_dashboard_interactivo.html" loading="lazy" style="height:720px;"></iframe>
+</div>
+            </div>
+            <div class="card">
+              <h4>Verificación del balance hídrico</h4>
+              <p>Se evaluó la consistencia interna del modelo mediante la verificación explícita del balance diario:</p>
+              <p><strong>Pt = ETt + Qt + ΔSt + rt</strong></p>
+              <p>La comparación entre la precipitación acumulada y la suma acumulada de (ET + Q + ΔS) muestra curvas prácticamente idénticas durante todo el período 1980-2014. El residual acumulado final es del orden de 10^-12 mm, valor numéricamente despreciable atribuible a redondeo en punto flotante. En términos prácticos, <strong>el cierre de masa es exacto</strong>.</p>
+              <p>El diagrama de Sankey confirma que la partición integrada entre evapotranspiración, escorrentía simulada y cambio neto de almacenamiento es físicamente coherente. El heatmap del residual mensual muestra valores del orden de 10^-14 mm/d sin patrones estacionales, confirmando ausencia de sesgos estructurales o errores de signo en el balance.</p>
+            </div>
+            <div class="card"><h4>Resumen de balance hídrico (no calibrado)</h4><table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Fuente</th>
+      <th>Periodo</th>
+      <th>NSE (Q)</th>
+      <th>KGE (Q)</th>
+      <th>Residual acum. (mm)</th>
+      <th>Error relativo final</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Daymet</td>
+      <td>1980-01-01 a 2014-12-31</td>
+      <td>0.066</td>
+      <td>0.003</td>
+      <td>-0.000</td>
+      <td>-0.000</td>
+    </tr>
+    <tr>
+      <td>NLDAS</td>
+      <td>1980-01-01 a 2014-12-31</td>
+      <td>0.032</td>
+      <td>0.058</td>
+      <td>-0.000</td>
+      <td>-0.000</td>
+    </tr>
+  </tbody>
+</table><p class="muted">Los resultados confirman que el bajo desempeño en términos de NSE no está asociado a errores estructurales o inconsistencias numéricas, sino a una parametrización inicial no ajustada a las características específicas de la cuenca.</p></div>
+
+
+            <h3 id="parte4">Parte 4 - Calibración</h3>
+            <div class="card">
+              <p>Se calibró el modelo conceptual de dos tanques utilizando dos algoritmos de optimización global: Differential Evolution (DE) y Dual Annealing (DA). La función objetivo fue el coeficiente de eficiencia de Nash-Sutcliffe (NSE), maximizando su valor (equivalentemente, minimizando -NSE).</p>
+              <p>Se aplicó un periodo de warm-up de 365 días para reducir la influencia de las condiciones iniciales. Posteriormente, se definieron dos periodos:</p>
+              <ul>
+                <li>Calibración: 1990-1999</li>
+                <li>Validación: 2000-2009</li>
+              </ul>
+              <p>La calibración se realizó de forma independiente para dos fuentes de precipitación (Daymet y NLDAS), resultando en cuatro combinaciones fuente-método.</p>
+            </div>
+            <div class="card">
+              <p>Las siguientes figuras muestran los hidrogramas diarios para cada combinación fuente-método. El menú desplegable permite seleccionar el algoritmo de optimización (DA o DE) para cada fuente de precipitación.</p>
+            </div>
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+  <h4>Calibrado estándar - Daymet (DA/DE)</h4>
+  <iframe src="../figuras/html/hidrograma_calibrado_daymet.html?v=20260227a" loading="lazy" style="height:600px;border:0;background:#000;"></iframe>
+</div>
+            </div>
+            <div class="card">
+              <h4>Desempeño con Daymet</h4>
+              <p>Para Daymet, ambos métodos produjeron ajustes satisfactorios, con una mejora de DE frente a DA:</p>
+              <ul>
+                <li>DA: NSE_cal ~= 0.532; NSE_val ~= 0.567</li>
+                <li>DE: NSE_cal ~= 0.550; NSE_val ~= 0.603</li>
+              </ul>
+              <p>Esto indica un ajuste satisfactorio durante calibración y una buena capacidad de generalización en validación. Visualmente, el modelo reproduce adecuadamente la dinámica general del hidrograma, aunque persiste una ligera subestimación en algunos picos de crecida.</p>
+            </div>
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+  <h4>Calibrado estándar - NLDAS (DA/DE)</h4>
+  <iframe src="../figuras/html/hidrograma_calibrado_nldas.html?v=20260227a" loading="lazy" style="height:600px;border:0;background:#000;"></iframe>
+</div>
+            </div>
+            <div class="card">
+              <h4>Desempeño con NLDAS</h4>
+              <p>Con NLDAS se obtuvo un desempeño similar durante calibración (NSE_cal ~= 0.531-0.537), pero una reducción marcada en validación (NSE_val ~= 0.389-0.397).</p>
+              <p>Esto sugiere que, para esta cuenca, la serie Daymet proporciona forzantes mas consistentes con la respuesta hidrológica observada y mayor robustez fuera del periodo calibrado.</p>
+            </div>
+<div class="card"><h4>Resultados calibración estándar</h4><table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Fuente</th>
+      <th>Metodo</th>
+      <th>NSE_cal</th>
+      <th>NSE_val</th>
+      <th>KGE_val</th>
+      <th>PeakRatio_val</th>
+      <th>P95Ratio_val</th>
+      <th>ETc</th>
+      <th>beta</th>
+      <th>alpha1</th>
+      <th>D1</th>
+      <th>k1</th>
+      <th>alpha2</th>
+      <th>D2</th>
+      <th>k2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>daymet</td>
+      <td>da</td>
+      <td>0.532</td>
+      <td>0.567</td>
+      <td>0.644</td>
+      <td>0.448</td>
+      <td>0.998</td>
+      <td>8.833</td>
+      <td>0.170</td>
+      <td>0.000</td>
+      <td>138.397</td>
+      <td>0.467</td>
+      <td>0.000</td>
+      <td>508.498</td>
+      <td>0.230</td>
+    </tr>
+    <tr>
+      <td>daymet</td>
+      <td>de</td>
+      <td>0.550</td>
+      <td>0.603</td>
+      <td>0.616</td>
+      <td>0.587</td>
+      <td>0.865</td>
+      <td>9.920</td>
+      <td>0.087</td>
+      <td>0.000</td>
+      <td>262.214</td>
+      <td>0.200</td>
+      <td>0.385</td>
+      <td>25.956</td>
+      <td>0.065</td>
+    </tr>
+    <tr>
+      <td>nldas</td>
+      <td>da</td>
+      <td>0.531</td>
+      <td>0.396</td>
+      <td>0.536</td>
+      <td>0.551</td>
+      <td>0.924</td>
+      <td>7.423</td>
+      <td>0.143</td>
+      <td>0.000</td>
+      <td>138.397</td>
+      <td>0.300</td>
+      <td>0.000</td>
+      <td>508.498</td>
+      <td>0.300</td>
+    </tr>
+    <tr>
+      <td>nldas</td>
+      <td>de</td>
+      <td>0.537</td>
+      <td>0.388</td>
+      <td>0.544</td>
+      <td>0.831</td>
+      <td>0.917</td>
+      <td>7.658</td>
+      <td>0.127</td>
+      <td>0.000</td>
+      <td>323.882</td>
+      <td>0.340</td>
+      <td>0.000</td>
+      <td>65.645</td>
+      <td>0.250</td>
+    </tr>
+  </tbody>
+</table><h4>Interpretación de parámetros</h4><p class="muted">Las soluciones óptimas conservan alpha1 en la frontera inferior, pero muestran estructuras internas distintas entre métodos, especialmente para Daymet.</p><p class="muted">En tres de las cuatro soluciones alpha2 también es cercano a cero, por lo que predomina la respuesta controlada por almacenamiento y drenaje lento. Daymet-DE constituye la excepción (alpha2 ~= 0.385 y D2 más bajo), lo que introduce una contribución rápida y mejora el NSE de validación.</p><p class="muted">Diferentes combinaciones paramétricas producen desempeños competitivos, lo cual evidencia equifinalidad bajo un criterio basado únicamente en NSE.</p><p><strong style="font-size:1.08rem;">En conjunto, la calibración estándar indica que Daymet-DE ofrece el mejor desempeño global, al alcanzar el mayor NSE en validación (0.603). La ventaja de Daymet frente a NLDAS es mayor que la diferencia entre optimizadores.</strong></p></div>
+            <div class="card">
+              <h4 style="font-size:1.35rem;color:#63f0c4;margin:0;">Análisis complementario enfocado en crecidas</h4>
+            </div>
+            <div class="card">
+              <h4 style="margin-bottom:8px;color:#cfe9ff;">Calibración orientada a extremos (objetivo: J)</h4>
+              <p>Adicionalmente, se realizó una calibración enfocada en la representación de eventos de crecida mediante una función objetivo compuesta J, que prioriza la reproducción de altos caudales e incorpora penalización por subestimación de picos.</p>
+              <p>Se mantuvieron las mismas configuraciones de optimización (DE y DA), periodos de calibración (1990-1999) y validación (2000-2009), así como el warm-up de 365 días. La calibración se ejecutó nuevamente para Daymet y NLDAS, resultando en cuatro combinaciones fuente-método.</p>
+              <p>Las figuras siguientes muestran los hidrogramas correspondientes; el menú desplegable permite seleccionar el algoritmo (DA o DE) para cada fuente.</p>
+            </div>
+
+            
+            
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+  <h4>Calibrado extremos - Daymet (DA/DE)</h4>
+  <iframe src="../figuras/html/hidrograma_calibrado_extremos_daymet.html?v=20260227a" loading="lazy" style="height:600px;border:0;background:#000;"></iframe>
+</div>
+            </div>
+            <div class="card">
+              <h4>Desempeño con Daymet - Extremos</h4>
+              <p>Para Daymet se obtuvo:</p>
+              <ul>
+                <li><strong>Jcal</strong> aprox 0.524</li>
+                <li><strong>NSEcal</strong> aprox 0.408</li>
+                <li><strong>NSEval</strong> aprox 0.415</li>
+              </ul>
+              <p>En comparación con la mejor calibración estándar, se observa una disminución del NSE en validación (de aprox 0.603 a aprox 0.415), lo cual evidencia el trade-off típico de la calibración orientada a extremos.</p>
+              <p>Visualmente, se aprecia una mejor representación relativa de algunos picos de crecida, aunque aparecen episodios puntuales de sobreestimación, coherentes con la penalización explícita por subestimación incluida en la función objetivo.</p>
+            </div>
+
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+  <h4>Calibrado extremos - NLDAS (DA/DE)</h4>
+  <iframe src="../figuras/html/hidrograma_calibrado_extremos_nldas.html?v=20260227a" loading="lazy" style="height:600px;border:0;background:#000;"></iframe>
+</div>
+            </div>
+            <div class="card">
+              <h4>Desempeño con NLDAS - Extremos</h4>
+              <p>Para NLDAS se obtuvo:</p>
+              <ul>
+                <li><strong>Jcal</strong> aprox 0.595</li>
+                <li><strong>NSEcal</strong> aprox 0.411</li>
+                <li><strong>NSEval</strong> aprox 0.247</li>
+              </ul>
+              <p>Si bien el valor de J es mayor que en Daymet, el desempeño en validación medido por NSE es considerablemente inferior. Esto confirma que, aún bajo una función objetivo enfocada en crecidas, Daymet mantiene mayor robustez hidrológica general que NLDAS para esta cuenca.</p>
+            </div>
+
+            <div class="card"><h4>Resultados calibración orientada a extremos</h4><table class="dataframe styled-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Fuente</th>
+      <th>Metodo</th>
+      <th>J_cal</th>
+      <th>J_val</th>
+      <th>NSE_cal</th>
+      <th>NSE_val</th>
+      <th>NSE_high_val</th>
+      <th>PeakBias_val</th>
+      <th>UnderHigh_val</th>
+      <th>ETc</th>
+      <th>beta</th>
+      <th>alpha1</th>
+      <th>D1</th>
+      <th>k1</th>
+      <th>alpha2</th>
+      <th>D2</th>
+      <th>k2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>daymet</td>
+      <td>da</td>
+      <td>0.524</td>
+      <td>0.606</td>
+      <td>0.408</td>
+      <td>0.415</td>
+      <td>0.290</td>
+      <td>0.364</td>
+      <td>0.139</td>
+      <td>8.997</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>327.327</td>
+      <td>0.363</td>
+      <td>0.000</td>
+      <td>458.993</td>
+      <td>0.363</td>
+    </tr>
+    <tr>
+      <td>daymet</td>
+      <td>de</td>
+      <td>0.524</td>
+      <td>0.606</td>
+      <td>0.407</td>
+      <td>0.414</td>
+      <td>0.291</td>
+      <td>0.364</td>
+      <td>0.138</td>
+      <td>8.971</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>462.211</td>
+      <td>0.363</td>
+      <td>0.000</td>
+      <td>815.731</td>
+      <td>0.363</td>
+    </tr>
+    <tr>
+      <td>nldas</td>
+      <td>da</td>
+      <td>0.595</td>
+      <td>0.919</td>
+      <td>0.411</td>
+      <td>0.248</td>
+      <td>-0.426</td>
+      <td>0.363</td>
+      <td>0.215</td>
+      <td>6.259</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>327.327</td>
+      <td>0.338</td>
+      <td>0.000</td>
+      <td>458.993</td>
+      <td>0.338</td>
+    </tr>
+    <tr>
+      <td>nldas</td>
+      <td>de</td>
+      <td>0.595</td>
+      <td>0.919</td>
+      <td>0.411</td>
+      <td>0.248</td>
+      <td>-0.426</td>
+      <td>0.363</td>
+      <td>0.215</td>
+      <td>6.259</td>
+      <td>0.000</td>
+      <td>0.000</td>
+      <td>471.374</td>
+      <td>0.338</td>
+      <td>0.000</td>
+      <td>638.719</td>
+      <td>0.338</td>
+    </tr>
+  </tbody>
+</table>
+              <div style="margin-top:12px;padding:14px 16px;border:1px solid #2f5f8f;border-radius:10px;background:linear-gradient(180deg,#0f1c2c,#12243b);">
+                <p style="margin:0 0 10px;"><strong>La calibración orientada a extremos mejora la representación relativa de eventos de alto caudal, pero reduce el desempeño global medido por NSE.</strong></p>
+                <p style="margin:0 0 10px;">Este comportamiento evidencia un trade-off estructural del modelo conceptual: el ajuste promedio y la representación óptima de crecidas no pueden maximizarse simultáneamente bajo una misma configuración paramétrica.</p>
+                <p style="margin:0;">La presencia de algunos picos sobreestimados no representa un error de implementación, sino una consecuencia directa del criterio de optimización adoptado.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4>Consistencia de parámetros y consideraciones físicas</h4>
+              <p>Los parámetros óptimos permanecen dentro de los rangos establecidos. Sin embargo, se observa convergencia frecuente a valores de frontera:</p>
+              <ul>
+                <li>En calibración estándar: alpha1 aprox 0 y alpha2 aprox 0</li>
+                <li>En calibración de extremos: además beta aprox 0</li>
+              </ul>
+              <p>De acuerdo con la formulación del modelo, esto implica:</p>
+              <ul>
+                <li>Ausencia de escorrentía directa (alpha1 aprox 0)</li>
+                <li>Ausencia de flujo rápido desde el tanque superior (alpha2 aprox 0)</li>
+                <li>Evapotranspiración dependiente principalmente de ETc (beta aprox 0)</li>
+              </ul>
+              <p>Esta configuración favorece una respuesta mas amortiguada y controlada por almacenamiento, lo cual es consistente con la estructura del modelo y con la subestimación parcial de ciertos picos observada en los hidrogramas.</p>
+            </div>
+
+            <div class="card">
+              <h4 style="font-size:1.35rem;color:#6fd4ff;margin:0 0 8px;">Validación del modelo (2000-2009)</h4>
+              <p>La validación del modelo se realizó sobre el periodo independiente 2000-2009, evaluando la capacidad de generalización fuera del intervalo de calibración (1990-1999).</p>
+              <p>El desempeño se analizó mediante tres enfoques complementarios:</p>
+              <p>(i) Análisis temporal del hidrograma,</p>
+              <p>(ii) Diagrama de dispersión Qobs vs Qsim,</p>
+              <p>(iii) Curva de duración de caudales (FDC).</p>
+            </div>
+
+            <div class="figure-grid">
+              <div class="figure-card figure-wide">
+  <h4>Hidrograma de validación</h4>
+  <iframe src="../figuras/html/validacion.html?v=20260227a" loading="lazy" style="height:600px;"></iframe>
+  <p class="muted" style="margin-top:10px;">El hidrograma de validación muestra que el modelo reproduce adecuadamente la dinámica temporal de los eventos, capturando la ocurrencia de crecidas y la variabilidad intra-anual.</p>
+  <p class="muted">La configuración estándar con Daymet (DE) presenta el mejor desempeño global (NSE_val = 0.603), evidenciando buena capacidad de generalización.</p>
+  <p class="muted">No obstante, se observa una tendencia sistemática a subestimar algunos picos de alta magnitud, especialmente en eventos extremos, lo cual es consistente con el comportamiento estructural identificado durante la calibración.</p>
+</div>
+              <div class="figure-card">
+  <h4>Validación - FDC observada vs simulada</h4>
+  <iframe src="../figuras/html/validacion_fdc_obs_vs_sim.html" loading="lazy" style="height:600px;"></iframe>
+  <p class="muted" style="margin-top:10px;">La FDC permite evaluar la representación estadística del régimen hidrológico completo.</p>
+  <p class="muted">La probabilidad de excedencia indica el porcentaje del tiempo en que un determinado caudal es igualado o superado.</p>
+  <ul class="muted">
+    <li>Valores bajos de excedencia representan eventos de alta magnitud.</li>
+    <li>Valores altos corresponden a caudales bajos o de base.</li>
+  </ul>
+  <p class="muted">Se observa que la calibración estándar con Daymet reproduce de forma más consistente la forma de la curva observada en la mayor parte del rango de probabilidades.</p>
+  <p class="muted">Las calibraciones orientadas a extremos muestran mejor ajuste relativo en la zona de bajas excedencias (altos caudales), pero mayor divergencia en caudales medios y bajos, confirmando el trade-off previamente discutido.</p>
+</div>
+              <div class="figure-card">
+  <h4>Validación - dispersión Qobs vs Qsim</h4>
+  <iframe src="../figuras/html/validacion_scatter_obs_vs_sim.html" loading="lazy" style="height:600px;"></iframe>
+  <p class="muted" style="margin-top:10px;">El diagrama de dispersión confirma el patrón observado en el hidrograma.</p>
+  <ul class="muted">
+    <li>La mayoría de los puntos correspondientes a caudales altos se ubican por debajo de la línea 1:1, indicando subestimación estructural de crecidas.</li>
+    <li>En caudales bajos se observa mayor dispersión relativa, comportamiento típico de modelos conceptuales de baja complejidad.</li>
+  </ul>
+  <p class="muted">La configuración estándar con Daymet presenta la menor dispersión global y mayor concentración alrededor de la línea 1:1, lo que confirma su mayor estabilidad en validación.</p>
+</div>
+            </div>
+            <h2 id="analisis">Análisis y discusión</h2>
+            <div class="card">
+              <h4>Discusión comparativa de estrategias de calibración</h4>
+              <p>La comparación entre fuentes meteorológicas (Daymet y NLDAS), métodos de optimización (DE y DA) y funciones objetivo (NSE estándar vs función orientada a extremos) permite identificar los factores que más influyen en el desempeño del modelo de dos tanques.</p>
+
+              <h4>Influencia de la fuente meteorológica</h4>
+              <p>Daymet supera consistentemente a NLDAS en validación. En calibración estándar, Daymet obtiene NSE_val entre 0.567 y 0.603, mientras que NLDAS obtiene valores entre 0.388 y 0.396.</p>
+              <p>La diferencia se confirma en:</p>
+              <ul>
+                <li>Hidrograma (mejor ajuste visual)</li>
+                <li>Dispersión Q_obs-Q_sim (menor sesgo)</li>
+                <li>FDC (mejor representación del régimen completo)</li>
+              </ul>
+              <p>Esto indica que la calidad y resolución espacial del forzamiento meteorológico es el factor más influyente en el desempeño del modelo para esta cuenca.</p>
+
+              <h4>Influencia del método de optimización</h4>
+              <p>La influencia del optimizador es secundaria frente a la fuente meteorológica, aunque DE mejora el NSE de validación de Daymet de 0.567 a 0.603. Para NLDAS la diferencia entre métodos es menor (0.388-0.396).</p>
+              <p>Esto sugiere que:</p>
+              <ul>
+                <li>Ambos algoritmos encuentran soluciones hidrológicamente competitivas.</li>
+                <li>Las diferencias paramétricas evidencian equifinalidad.</li>
+                <li>El método de optimización tiene menor impacto que la calidad del forzamiento.</li>
+              </ul>
+
+              <h4>Calibración estándar vs calibración orientada a extremos</h4>
+              <p>La calibración estándar maximiza el ajuste global (NSE) y produce el mejor desempeño general.</p>
+              <p>La calibración orientada a extremos mejora parcialmente la representación de picos, pero reduce el NSE global (Daymet NSE_val aprox 0.415; NLDAS aprox 0.247).</p>
+              <p>Esto evidencia un <strong>trade-off</strong> estructural:</p>
+              <ul>
+                <li>Mejor ajuste de crecidas</li>
+                <li>A costa de pérdida de ajuste promedio</li>
+              </ul>
+              <p>La FDC muestra que la calibración estándar reproduce mejor la distribución completa, mientras que la calibración de extremos altera la cola baja y aumenta la dispersión.</p>
+            </div>
+
+            <div class="card">
+              <h4>Interpretación física de los parámetros calibrados</h4>
+              <p>La convergencia frecuente de parámetros a valores en frontera (alpha1 = 0, alpha2 = 0 y beta = 0 en calibración de extremos) tiene una interpretacion hidrológica clara.</p>
+              <ul>
+                <li>alpha1 = 0 implica ausencia de escorrentía directa inmediata.</li>
+                <li>alpha2 = 0 indica ausencia de flujo rápido desde el primer tanque.</li>
+                <li>beta = 0 sugiere evapotranspiración controlada principalmente por ETc, sin dependencia directa de la lluvia diaria.</li>
+              </ul>
+              <p>En conjunto, los resultados sugieren una cuenca dominada por almacenamiento y liberación gradual, con respuesta relativamente amortiguada frente a eventos de lluvia.</p>
+              <p>Este comportamiento es coherente con la subestimación parcial de picos observada en validación.</p>
+            </div>
+
+            <div class="card">
+              <h4 style="font-size:1.25rem;">Limitaciones del modelo</h4>
+              <p>El modelo conceptual de dos tanques presenta limitaciones inherentes a su estructura simplificada:</p>
+              <ul>
+                <li>No representa procesos físicos explícitos ni heterogeneidad espacial.</li>
+                <li>Tiende a subestimar eventos extremos de alta magnitud.</li>
+                <li>Presenta parámetros en frontera, lo que sugiere flexibilidad estructural limitada.</li>
+                <li>Es altamente sensible a la calidad del forzamiento meteorológico.</li>
+                <li>Puede existir equifinalidad (múltiples combinaciones paramétricas con desempeño similar).</li>
+              </ul>
+              <p>En consecuencia, el modelo representa adecuadamente el comportamiento agregado del sistema, pero simplifica la complejidad hidrológica real.</p>
+            </div>
+
+            <div class="card">
+              <h4 style="font-size:1.25rem;">Propuestas de mejora</h4>
+              <p>Para fortalecer la capacidad predictiva del modelo se proponen:</p>
+              <ul>
+                <li>Implementar calibración multiobjetivo (NSE global + métricas de extremos).</li>
+                <li>Incorporar un componente explícito de escorrentía rápida.</li>
+                <li>Evaluar estructura con almacenamiento adicional.</li>
+                <li>Realizar análisis de sensibilidad e incertidumbre.</li>
+                <li>Explorar corrección o combinación de fuentes meteorológicas.</li>
+              </ul>
+              <p>Estas mejoras permitirían reducir el compromiso entre ajuste global y representación de crecidas.</p>
+            </div>
+
+            <h2 id="conclusion">Conclusión general</h2>
+            <div class="card"><p>El modelo conceptual de dos tanques implementado para la cuenca Sopchoppy River logra un cierre robusto del balance hídrico y reproduce razonablemente la dinámica lluvia-escorrentía.</p>
+            <p>La evaluación comparativa demuestra que:</p>
+            <ul>
+              <li>La fuente meteorológica es el factor más determinante en el desempeño.</li>
+              <li>Daymet ofrece mayor capacidad de generalización; la mejor configuración alcanza NSE_val aprox 0.603.</li>
+              <li>El método de optimización tiene un impacto secundario, con ventaja de DE para Daymet.</li>
+              <li>La calibración orientada a extremos mejora parcialmente la representación de crecidas, pero reduce el desempeño global.</li>
+            </ul>
+            <p>El análisis integrado mediante hidrogramas, dispersión y FDC confirma que la configuración Daymet-DE con calibración estándar ofrece el mejor equilibrio entre coherencia física, estabilidad numérica y capacidad predictiva.</p>
+            <p>La presencia de parámetros en frontera sugiere una cuenca dominada por almacenamiento lento, consistente con el comportamiento hidrológico observado.</p>
+            <p>En síntesis, el modelo constituye una herramienta adecuada para simulación hidrológica general en esta cuenca, aunque futuras mejoras estructurales y estratégias multiobjetivo podrían fortalecer la representación de eventos extremos.</p></div>
+          </div>
+        </body>
+        </html>

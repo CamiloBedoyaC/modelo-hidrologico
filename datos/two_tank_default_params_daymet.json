@@ -1,0 +1,15 @@
+{
+  "gauge_id": "02327100",
+  "source": "daymet",
+  "precip_column": "prcp_daymet_mm_day",
+  "params": {
+    "ETc": 2.0,
+    "beta": 0.2,
+    "alpha1": 0.2,
+    "D1": 150.0,
+    "k1": 0.08,
+    "alpha2": 0.3,
+    "D2": 400.0,
+    "k2": 0.03
+  }
+}

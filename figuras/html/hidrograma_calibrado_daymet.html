@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Selector de hidrogramas</title>
+  <style>
+    html, body { margin:0; background:#000; color:#fff; font-family:Arial, sans-serif; }
+    .toolbar { display:flex; gap:8px; align-items:center; padding:10px 12px; border-bottom:1px solid #222; }
+    select { background:#111826; color:#fff; border:1px solid #2a3140; border-radius:6px; padding:6px 10px; }
+    .container { padding:0; background:#000; }
+    .plot-frame { width:100%; height:680px; border:0; display:block; background:#000; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <span>Selecciona método:</span>
+    <select id="sel">
+      <option value="hidrograma_calibrado_daymet_da.html">Daymet - DA</option>
+<option value="hidrograma_calibrado_daymet_de.html">Daymet - DE</option>
+    </select>
+  </div>
+  <div class="container">
+    <iframe class="plot-frame" data-src="hidrograma_calibrado_daymet_da.html" style="display:none"></iframe>
+<iframe class="plot-frame" data-src="hidrograma_calibrado_daymet_de.html" style="display:none"></iframe>
+  </div>
+  <script>
+    const sel = document.getElementById('sel');
+    const frames = Array.from(document.querySelectorAll('.plot-frame'));
+    function showSelected() {
+      const value = sel.value;
+      frames.forEach((f) => {
+        if (f.getAttribute('data-src') === value) {
+          f.style.display = 'block';
+          if (!f.src) f.src = value;
+        } else {
+          f.style.display = 'none';
+        }
+      });
+    }
+    sel.addEventListener('change', showSelected);
+    showSelected();
+  </script>
+</body>
+</html>

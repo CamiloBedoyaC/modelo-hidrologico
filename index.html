@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Proyecto reproducible de modelación lluvia-escorrentía con CAMELS-US, Differential Evolution y Dual Annealing.">
+  <title>Modelo hidrológico | Sopchoppy River</title>
+  <style>
+    :root { --bg:#061018; --panel:#0d1b27; --line:#244257; --text:#edf7ff; --muted:#a9bfd0; --blue:#46b7ff; --green:#3ee0a0; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--text); background:radial-gradient(circle at 85% 10%,#123d51 0,transparent 30%),var(--bg); font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    .wrap { width:min(1160px,92vw); margin:auto; }
+    header { min-height:72vh; display:grid; align-items:center; padding:64px 0 38px; }
+    .eyebrow { color:var(--green); letter-spacing:.13em; font-weight:750; text-transform:uppercase; font-size:.82rem; }
+    h1 { margin:.35rem 0 1rem; max-width:900px; font-size:clamp(2.5rem,6vw,5.5rem); line-height:1.02; letter-spacing:-.045em; }
+    .lead { max-width:780px; color:var(--muted); font-size:clamp(1.05rem,2vw,1.3rem); }
+    .actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+    .btn { display:inline-block; padding:12px 18px; border-radius:10px; border:1px solid var(--line); color:var(--text); text-decoration:none; font-weight:700; background:#102231; }
+    .btn.primary { color:#021019; border-color:var(--green); background:linear-gradient(135deg,var(--green),var(--blue)); }
+    .metrics,.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+    .metric,.card { border:1px solid var(--line); border-radius:16px; background:linear-gradient(160deg,rgba(17,39,55,.94),rgba(8,22,33,.94)); padding:22px; }
+    .value { display:block; color:var(--blue); font-size:2rem; font-weight:800; }
+    section { padding:42px 0; }
+    h2 { font-size:clamp(1.7rem,3vw,2.6rem); margin:0 0 20px; }
+    h3 { margin-top:0; color:#cdeaff; }
+    p { color:var(--muted); }
+    .preview { width:100%; border:1px solid var(--line); border-radius:16px; background:#000; box-shadow:0 24px 70px rgba(0,0,0,.35); }
+    code { color:#b8e5ff; }
+    footer { padding:36px 0 60px; color:var(--muted); border-top:1px solid var(--line); margin-top:40px; }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <div>
+      <div class="eyebrow">Hidrología · Modelación conceptual · CAMELS-US</div>
+      <h1>Modelo lluvia-escorrentía de dos tanques</h1>
+      <p class="lead">Calibración y validación en la cuenca USGS 02327100 (Sopchoppy River, Florida), comparando Daymet y NLDAS, Differential Evolution y Dual Annealing, ajuste global y eventos extremos.</p>
+      <div class="actions">
+        <a class="btn primary" href="informe/reporte_tarea1_interactivo.html">Explorar reporte interactivo</a>
+        <a class="btn" href="informe/reporte_tarea1.pdf">Abrir informe PDF</a>
+        <a class="btn" href="https://github.com/CamiloBedoyaC/modelo-hidrologico-sopchoppy">Ver código y reproducibilidad</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="metrics" aria-label="Resultados principales">
+      <div class="metric"><span class="value">0.603</span>Mejor NSE de validación (Daymet-DE)</div>
+      <div class="metric"><span class="value">10^-12 mm</span>Cierre acumulado del balance</div>
+      <div class="metric"><span class="value">4</span>Combinaciones fuente-método</div>
+      <div class="metric"><span class="value">1980-2014</span>Ventana hidrometeorológica</div>
+    </section>
+
+    <section>
+      <h2>Del dato al diagnóstico</h2>
+      <div class="cards">
+        <article class="card"><h3>Datos</h3><p>Series diarias CAMELS-US, atributos fisiográficos y forzamientos Daymet, NLDAS y Maurer, con trazabilidad y conversión explícita de unidades.</p></article>
+        <article class="card"><h3>Modelo</h3><p>Dos almacenamientos conectados, descarga rápida y lenta, evapotranspiración y auditoría diaria/acumulada de conservación de masa.</p></article>
+        <article class="card"><h3>Calibración</h3><p>DE y DA con semillas fijas. Objetivo estándar NSE y objetivo compuesto <em>J</em> para estudiar el compromiso entre ajuste global y crecidas.</p></article>
+        <article class="card"><h3>Validación</h3><p>Periodo independiente 2000-2009 evaluado con NSE, KGE, hidrogramas, dispersión observada-simulada y curvas de duración.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Resultado visual</h2>
+      <img class="preview" src="figuras/validacion.png" alt="Hidrograma de validación del modelo con Daymet">
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <a href="https://github.com/LindaCatalina" style="color:var(--blue)">Linda Catalina Correa Lozano</a> ·
+    <a href="https://github.com/CamiloBedoyaC" style="color:var(--blue)">Juan Camilo Bedoya Carmona</a> ·
+    Código MIT · Datos CAMELS-US con fuentes citadas en <a href="DATA_SOURCES.md" style="color:var(--blue)">DATA_SOURCES.md</a>
+  </footer>
+</body>
+</html>
